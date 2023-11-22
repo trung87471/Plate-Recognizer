@@ -6,24 +6,24 @@ pytesseract.pytesseract.tesseract_cmd = r'tesseract\tesseract.exe'
 video_mode = True  # Nếu video_mode = True thì sẽ không hiển thị ảnh
 
 
-def show_img(title, img):
+def show_image(title, image):
     if video_mode:
         return
-    cv2.imshow(title, img)
+    cv2.imshow(title, image)
     cv2.waitKey(0)
 
 
-def find_largest_rectangle(img):
-    show_img('Anh goc', img)
-    gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    show_img('Anh xam', gray_img)
-    binary_img = cv2.adaptiveThreshold(gray_img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
-    show_img('Anh nhi phan', binary_img)
-    contours, hierarchy = cv2.findContours(binary_img, 1, 1)  # Tìm đường viền
+def preprocess_image(image):
+    show_image('Anh goc', image)
+    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    show_image('Anh xam', gray_image)
+    binary_image = cv2.adaptiveThreshold(gray_image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+    show_image('Anh nhi phan', binary_image)
+    contours, hierarchy = cv2.findContours(binary_image, 1, 1)  # Tìm đường viền
 
-    tmp_img = img.copy()  # Tạo bản sao của ảnh gốc
-    cv2.drawContours(tmp_img, contours, -1, (0, 255, 0), 1)  # Vẽ đường viền lên ảnh gốc
-    show_img('Ve duong vien len anh goc', tmp_img)
+    tmp_image = image.copy()  # Tạo bản sao của ảnh gốc
+    cv2.drawContours(tmp_image, contours, -1, (0, 255, 0), 1)  # Vẽ đường viền lên ảnh gốc
+    show_image('Ve duong vien len anh goc', tmp_image)
 
     largest_rectangle = [0, 0]
     for contour in contours:
@@ -39,18 +39,18 @@ def find_largest_rectangle(img):
 
     col, row, width, height = cv2.boundingRect(largest_rectangle[1])  # Xác định tọa độ của hình chữ nhật
 
-    cv2.drawContours(img, [largest_rectangle[1]], 0, (0, 255, 0), 1)
-    show_img('Dinh vi bien so xe tren anh', img)
-    cropped_img = img[row:row + height, col:col + width]  # Cắt ảnh bằng tọa độ của hình chữ nhật
-    show_img('Bien so xe', cropped_img)
-    cropped_img = gray_img[row:row + height, col:col + width]  # Cắt ảnh xám bằng tọa độ của hình chữ nhật
+    cv2.drawContours(image, [largest_rectangle[1]], 0, (0, 255, 0), 1)
+    show_image('Dinh vi bien so xe tren anh', image)
+    cropped_img = image[row:row + height, col:col + width]  # Cắt ảnh bằng tọa độ của hình chữ nhật
+    show_image('Bien so xe', cropped_img)
+    cropped_img = gray_image[row:row + height, col:col + width]  # Cắt ảnh xám bằng tọa độ của hình chữ nhật
     return cropped_img
 
 
 def read_license_plate(img, enable_img):
     global video_mode
     video_mode = not enable_img
-    img = find_largest_rectangle(img)
+    img = preprocess_image(img)
     if img is None:
         return ''
     blur = cv2.GaussianBlur(img, (3, 3), 0)  # lam mo anh de giam nhieu va lam gon bien so
@@ -61,16 +61,16 @@ def read_license_plate(img, enable_img):
     data = pytesseract.image_to_string(opening, lang='eng',
                                        config='--psm 6')  # su dung pytesseract de nhan dang bien so
 
-    show_img('Bien so la', opening)
+    show_image('Bien so la', opening)
     return data
 
 
 def main():
     global video_mode
     video_mode = False
-    img_path = r'asset/images/1.png'
-    image = cv2.imread(img_path)
-    assert image is not None, 'Không thể đọc ảnh tại đường dẫn: ' + img_path
+    image_path = r'asset/images/1.png'
+    image = cv2.imread(image_path)
+    assert image is not None, 'Không thể đọc ảnh tại đường dẫn: ' + image_path
     if image.shape[0] > 1000 or image.shape[1] > 1000:
         image = cv2.resize(image, (0, 0), fx=0.25, fy=0.25)
     print('Bien so la:')
