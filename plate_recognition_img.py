@@ -36,6 +36,9 @@ def find_largest_rectangle(img, enable_img):
             if area > largest_rectangle[0]:  # Tình diện tích lớn nhất
                 largest_rectangle = [cv2.contourArea(contour), contour, approx]  # Lưu lại hình chữ nhật lớn nhất
 
+    if largest_rectangle[0] == 0 and largest_rectangle[1] == 0:
+        return None
+
     col, row, width, height = cv2.boundingRect(largest_rectangle[1])  # Xác định tọa độ của hình chữ nhật
 
     cv2.drawContours(img, [largest_rectangle[1]], 0, (0, 255, 0), 1)
@@ -71,6 +74,9 @@ def main():
         image = cv2.resize(image, (0, 0), fx=0.25, fy=0.25)
     print('Bien so la:')
     img = find_largest_rectangle(image, True)
+    if img is None:
+        print('Khong tim thay bien so xe')
+        return
     res = read_license_plate(img, True)
     print(res)
     cv2.putText(image, res, (20, 40), cv2.QT_FONT_NORMAL, 1, (255, 255, 255))

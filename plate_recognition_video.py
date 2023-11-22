@@ -19,6 +19,9 @@ def recognize_license_plates_on_video(video_path):
             break
 
         img = find_largest_rectangle(frame, False)
+
+        if img is None:
+            continue
         result = read_license_plate(img, False)
         if result == '':
             continue
