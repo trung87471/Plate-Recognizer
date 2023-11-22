@@ -13,9 +13,7 @@ def show_img(title, img):
     cv2.waitKey(0)
 
 
-def find_largest_rectangle(img, enable_img):
-    global video_mode
-    video_mode = not enable_img
+def find_largest_rectangle(img):
     show_img('Anh goc', img)
     gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     show_img('Anh xam', gray_img)
@@ -52,6 +50,9 @@ def find_largest_rectangle(img, enable_img):
 def read_license_plate(img, enable_img):
     global video_mode
     video_mode = not enable_img
+    img = find_largest_rectangle(img)
+    if img is None:
+        return ''
     blur = cv2.GaussianBlur(img, (3, 3), 0)  # lam mo anh de giam nhieu va lam gon bien so
     binary_img = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT,
@@ -73,11 +74,7 @@ def main():
     if image.shape[0] > 1000 or image.shape[1] > 1000:
         image = cv2.resize(image, (0, 0), fx=0.25, fy=0.25)
     print('Bien so la:')
-    img = find_largest_rectangle(image, True)
-    if img is None:
-        print('Khong tim thay bien so xe')
-        return
-    res = read_license_plate(img, True)
+    res = read_license_plate(image, True)
     print(res)
     cv2.putText(image, res, (20, 40), cv2.QT_FONT_NORMAL, 1, (255, 255, 255))
     cv2.imshow('Ket qua', image)

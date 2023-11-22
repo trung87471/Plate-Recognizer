@@ -1,6 +1,6 @@
 import cv2
 
-from plate_recognition_img import find_largest_rectangle, read_license_plate
+from plate_recognition_img import read_license_plate
 
 
 def recognize_license_plates_on_video(video_path):
@@ -18,11 +18,7 @@ def recognize_license_plates_on_video(video_path):
         if not ret:
             break
 
-        img = find_largest_rectangle(frame, False)
-
-        if img is None:
-            continue
-        result = read_license_plate(img, False)
+        result = read_license_plate(frame, False)
         if result == '':
             continue
         print('Biển số:')
