@@ -3,7 +3,7 @@ import pytesseract
 
 pytesseract.pytesseract.tesseract_cmd = r'tesseract\tesseract.exe'
 
-video_mode = True
+video_mode = True  # Nếu video_mode = True thì sẽ không hiển thị ảnh
 
 
 def show_img(title, img):
@@ -16,16 +16,16 @@ def show_img(title, img):
 def find_largest_rectangle(img, enable_img):
     global video_mode
     video_mode = not enable_img
-    show_img('Ảnh gốc', img)
+    show_img('Anh goc', img)
     gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    show_img('Ảnh xám', gray_img)
+    show_img('Anh xam', gray_img)
     binary_img = cv2.adaptiveThreshold(gray_img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
-    show_img('Ảnh nhị phân', binary_img)
-    contours, hierarchy = cv2.findContours(binary_img, 1, 1)
+    show_img('Anh nhi phan', binary_img)
+    contours, hierarchy = cv2.findContours(binary_img, 1, 1)  # Tìm đường viền
 
-    tmp_img = img.copy()
-    cv2.drawContours(tmp_img, contours, -1, (0, 255, 0), 1)
-    show_img('Vẽ đường viền lên ảnh gốc', tmp_img)
+    tmp_img = img.copy()  # Tạo bản sao của ảnh gốc
+    cv2.drawContours(tmp_img, contours, -1, (0, 255, 0), 1)  # Vẽ đường viền lên ảnh gốc
+    show_img('Ve duong vien len anh goc', tmp_img)
 
     largest_rectangle = [0, 0]
     for contour in contours:
@@ -39,10 +39,10 @@ def find_largest_rectangle(img, enable_img):
     col, row, width, height = cv2.boundingRect(largest_rectangle[1])  # Xác định tọa độ của hình chữ nhật
 
     cv2.drawContours(img, [largest_rectangle[1]], 0, (0, 255, 0), 1)
-    show_img('Định vị biển số xe trên ảnh', img)
+    show_img('Dinh vi bien so xe tren anh', img)
     cropped_img = img[row:row + height, col:col + width]  # Cắt ảnh bằng tọa độ của hình chữ nhật
-    show_img('Biển số xe', cropped_img)
-    cropped_img = gray_img[row:row + height, col:col + width]
+    show_img('Bien so xe', cropped_img)
+    cropped_img = gray_img[row:row + height, col:col + width]  # Cắt ảnh xám bằng tọa độ của hình chữ nhật
     return cropped_img
 
 
@@ -66,7 +66,7 @@ def main():
     video_mode = False
     img_path = r'asset/images/1.png'
     image = cv2.imread(img_path)
-    assert image is not None, 'Khong the doc anh tai duong dan: ' + img_path
+    assert image is not None, 'Không thể đọc ảnh tại đường dẫn: ' + img_path
     if image.shape[0] > 1000 or image.shape[1] > 1000:
         image = cv2.resize(image, (0, 0), fx=0.25, fy=0.25)
     print('Bien so la:')

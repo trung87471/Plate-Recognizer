@@ -3,7 +3,7 @@ import cv2
 from plate_recognition_img import find_largest_rectangle, read_license_plate
 
 
-def display_video_frames(video_path):
+def recognize_license_plates_on_video(video_path):
     cap = cv2.VideoCapture(video_path)
 
     if not cap.isOpened():
@@ -37,7 +37,7 @@ def display_video_frames(video_path):
 
 def main():
     video_path = r'asset/videos/1.mp4'
-    display_video_frames(video_path)
+    recognize_license_plates_on_video(video_path)
 
 
 if __name__ == '__main__':
